@@ -1,11 +1,16 @@
 package main
 
 import (
+	"github.com/colere-inc/seen-api/app/common/config"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
+	// Init
+	config.Init()
+
 	// Echo instance
 	e := echo.New()
 
@@ -14,5 +19,5 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Start server
-	// e.Logger.Fatal(e.Start(":" + config.Port))
+	e.Logger.Fatal(e.Start(":" + config.Port))
 }
