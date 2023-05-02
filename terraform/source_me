@@ -1,0 +1,4 @@
+export GOOGLE_PROJECT='colere-survey-stg'
+GOOGLE_CREDENTIALS="$(cat terraform/credentials/*.json)"
+export GOOGLE_CREDENTIALS="${GOOGLE_CREDENTIALS}"
+export GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_CREDENTIALS}"

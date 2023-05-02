@@ -1,0 +1,2 @@
+bucket = "seen-tfstate-stg"
+prefix = "seen-api"
