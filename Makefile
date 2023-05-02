@@ -21,4 +21,3 @@ build: vet
 
 run: build
 	docker run --env-file .env -p ${PORT}:${PORT} --rm ${IMAGE_NAME}
-
