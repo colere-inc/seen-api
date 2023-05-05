@@ -3,7 +3,8 @@
 ## Usage
 
 ```shell
-curl -i https://seen-api-akmjhvanuq-an.a.run.app/accounting/partners/61383351
+# 株式会社フリー
+$ curl -i "https://seen-api-akmjhvanuq-an.a.run.app/accounting/partners?name=%E6%A0%AA%E5%BC%8F%E4%BC%9A%E7%A4%BE%E3%83%95%E3%83%AA%E3%83%BC"
 ```
 
 ## Setup
@@ -22,7 +23,7 @@ $ export GOOGLE_APPLICATION_CREDENTIALS="terraform/credentials/stg.json"
 # access_token の値を .env にコピペした上で実行してください
 $ make
 
-$ curl -i http://localhost:8080/accounting/partners/61383351
+$ curl -i "http://localhost:8080/accounting/partners?name=%E6%A0%AA%E5%BC%8F%E4%BC%9A%E7%A4%BE%E3%83%95%E3%83%AA%E3%83%BC"
 ```
 
 ## Deploy (adhoc)
