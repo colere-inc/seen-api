@@ -3,7 +3,7 @@
 ## Usage
 
 ```shell
-curl -i https://seen-api-akmjhvanuq-an.a.run.app/accounting/partners
+curl -i https://seen-api-akmjhvanuq-an.a.run.app/accounting/partners/61383351
 ```
 
 ## Setup
@@ -20,7 +20,7 @@ $ gcloud secrets versions access latest \
 # access_token の値を .env にコピペした上で実行してください
 $ make
 
-$ curl -i http://localhost:8080/accounting/partners
+$ curl -i http://localhost:8080/accounting/partners/61383351
 ```
 
 ## Deploy (adhoc)
