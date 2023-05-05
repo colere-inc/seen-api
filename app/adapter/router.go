@@ -1,9 +1,12 @@
 package adapter
 
 import (
-	"io/ioutil"
+	"encoding/json"
+	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/colere-inc/seen-api/app/domain/model"
 
 	"github.com/colere-inc/seen-api/app/common/config"
 
@@ -33,14 +36,23 @@ func ListPartners() echo.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
-		defer res.Body.Close()
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+				panic(err)
+			}
+		}(res.Body)
 
-		resBody, err := ioutil.ReadAll(res.Body)
+		resBody, err := io.ReadAll(res.Body)
 		if err != nil {
-			// エラー処理
 			panic(err)
 		}
-		return c.JSON(res.StatusCode, response{Text: string(resBody)})
+		var partners model.Partners
+		err = json.Unmarshal(resBody, &partners)
+		if err != nil {
+			panic(err)
+		}
+		return c.JSON(res.StatusCode, partners)
 	}
 }
 
