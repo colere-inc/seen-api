@@ -25,6 +25,10 @@ resource "google_cloud_run_v2_service" "default" {
     containers {
       image = var.image
       env {
+        name  = "GCP_PROJECT_ID"
+        value = var.gcp_project_id
+      }
+      env {
         name  = "FREEE_COMPANY_ID"
         value = var.freee_company_id
       }
