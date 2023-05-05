@@ -10,6 +10,7 @@ import (
 const freeeApiTokenPath = "/secrets/freee-api-token"
 
 var Port string
+var ProjectID string
 var FreeeCompanyId string
 var FreeeAccessToken string
 
@@ -21,6 +22,10 @@ func Init() {
 		log.Printf("defaulting to Port %s", Port)
 	}
 	log.Println(Port)
+
+	log.Println("ProjectID")
+	ProjectID = getenv("GCP_PROJECT_ID")
+	log.Println(ProjectID)
 
 	log.Println("FreeeCompanyId")
 	FreeeCompanyId = getenv("FREEE_COMPANY_ID")

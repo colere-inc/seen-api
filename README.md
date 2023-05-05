@@ -17,6 +17,8 @@ $ gcloud secrets versions access latest \
   --secret="freee-api-token" \
   --project colere-survey-stg > freee-secret.json
 
+$ export GOOGLE_APPLICATION_CREDENTIALS="terraform/credentials/stg.json"
+
 # access_token の値を .env にコピペした上で実行してください
 $ make
 
