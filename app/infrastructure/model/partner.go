@@ -1,9 +1,13 @@
 package model
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/colere-inc/seen-api/app/common/config"
+	"google.golang.org/api/iterator"
 	"net/url"
+	strconv "strconv"
 
 	"github.com/colere-inc/seen-api/app/domain/model"
 	"github.com/colere-inc/seen-api/app/domain/repository"
@@ -25,7 +29,7 @@ func NewPartnerRepository(
 	}
 }
 
-func (p InfraPartnerRepository) GetPartnerById(id int64) (*model.Partner, error) {
+func (p InfraPartnerRepository) GetById(id int64) (*model.Partner, error) {
 	// request
 	values := url.Values{}
 	values.Set("company_id", p.FreeeAccounting.CompanyId)
@@ -40,9 +44,42 @@ func (p InfraPartnerRepository) GetPartnerById(id int64) (*model.Partner, error)
 	return &partnerRes.Partner, err
 }
 
-func (p InfraPartnerRepository) GetPartnerByName(name string) (*model.Partner, error) {
-	var id int64 = 0 // TODO
-	return p.GetPartnerById(id)
+func (p InfraPartnerRepository) GetByName(name string) (*model.Partner, error) {
+	ctx := context.Background()
+	partnerID := p.searchFirestoreByName(name, ctx)
+	return p.GetById(partnerID)
+}
+
+func (p InfraPartnerRepository) searchFirestoreByName(name string, ctx context.Context) int64 {
+	query := p.DB.Collection(config.FreeeCompaniesCollectionId).
+		Doc(config.FreeeCompanyId).
+		Collection(config.FreeePartnersSubCollectionId).
+		Where("name", "==", name)
+	var partnerID string
+	it := query.Documents(ctx)
+	for {
+		doc, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			panic(fmt.Sprintf("documents iterator: %v", err))
+		}
+		if partnerID != "" {
+			panic(fmt.Sprintf("multiple documents are found (name = %s)", name))
+		}
+		partnerID = doc.Ref.ID
+	}
+
+	if partnerID == "" {
+		panic(fmt.Sprintf("not found (name = %s)", name))
+	}
+
+	partnerIntID, err := strconv.ParseInt(partnerID, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return partnerIntID
 }
 
 type partnerResponse struct {

@@ -7,6 +7,13 @@ import (
 	"os"
 )
 
+// public constants
+const (
+	FreeeCompaniesCollectionId   = "freeeCompanies"
+	FreeePartnersSubCollectionId = "partners"
+)
+
+// private constants
 const freeeApiTokenPath = "/secrets/freee-api-token"
 
 var Port string

@@ -19,7 +19,7 @@ func (pc *PartnerController) Get() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var partnerID int64
 		echo.PathParamsBinder(c).Int64("partnerID", &partnerID)
-		partner, err := pc.PartnerRepository.GetPartnerById(partnerID)
+		partner, err := pc.PartnerRepository.GetById(partnerID)
 		if err != nil {
 			panic(err)
 		}

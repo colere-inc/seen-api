@@ -5,6 +5,6 @@ import (
 )
 
 type PartnerRepository interface {
-	GetPartnerById(id int64) (*model.Partner, error)
-	GetPartnerByName(name string) (*model.Partner, error)
+	GetById(id int64) (*model.Partner, error)
+	GetByName(name string) (*model.Partner, error)
 }
