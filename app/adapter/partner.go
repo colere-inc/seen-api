@@ -17,6 +17,17 @@ func NewPartnerController(pr repository.PartnerRepository) *PartnerController {
 
 func (pc *PartnerController) Get() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		name := c.QueryParam("name")
+		partner, err := pc.PartnerRepository.GetByName(name)
+		if err != nil {
+			panic(err)
+		}
+		return c.JSON(http.StatusOK, partner)
+	}
+}
+
+func (pc *PartnerController) GetByID() echo.HandlerFunc {
+	return func(c echo.Context) error {
 		var partnerID int64
 		echo.PathParamsBinder(c).Int64("partnerID", &partnerID)
 		partner, err := pc.PartnerRepository.GetById(partnerID)
