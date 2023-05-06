@@ -38,10 +38,14 @@ func (pc *PartnerController) GetByID() echo.HandlerFunc {
 	}
 }
 
-func hello(c echo.Context) error {
-	return c.JSON(http.StatusOK, response{Text: "Hello, world!"})
-}
-
-type response struct {
-	Text string `json:"text"`
+func (pc *PartnerController) Add() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var name string
+		echo.FormFieldBinder(c).String("name", &name)
+		partner, err := pc.PartnerRepository.Add(name)
+		if err != nil {
+			panic(err)
+		}
+		return c.JSON(http.StatusCreated, partner)
+	}
 }

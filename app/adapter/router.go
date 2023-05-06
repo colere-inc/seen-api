@@ -6,5 +6,5 @@ import (
 
 func NewRouter(e *echo.Echo, controller PartnerController) {
 	e.GET("/accounting/partners", controller.Get())
-	e.POST("/accounting/partners", hello)
+	e.POST("/accounting/partners", controller.Add())
 }

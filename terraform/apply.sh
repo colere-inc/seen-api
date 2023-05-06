@@ -10,4 +10,7 @@ terraform fmt
 terraform init -reconfigure "-backend-config=${ENV}.tfbackend"
 terraform validate
 terraform plan -var-file="${ENV}.tfvars"
-terraform apply -var-file="${ENV}.tfvars" -auto-approve -replace=google_cloud_run_v2_service.default
+terraform apply -var-file="${ENV}.tfvars" \
+  -auto-approve \
+  -replace=google_cloud_run_v2_service.default \
+  -replace=google_cloud_run_v2_service_iam_member.member

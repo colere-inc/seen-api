@@ -1,13 +1,14 @@
 package model
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/colere-inc/seen-api/app/common/config"
 	"google.golang.org/api/iterator"
 	"net/url"
-	strconv "strconv"
+	"strconv"
 
 	"github.com/colere-inc/seen-api/app/domain/model"
 	"github.com/colere-inc/seen-api/app/domain/repository"
@@ -38,6 +39,26 @@ func (p InfraPartnerRepository) GetById(id int64) (*model.Partner, error) {
 	// unmarshal
 	var partnerRes partnerResponse
 	err := json.Unmarshal(res.ResBody, &partnerRes)
+	if err != nil {
+		panic(err)
+	}
+	return &partnerRes.Partner, err
+}
+
+func (p InfraPartnerRepository) Add(name string) (*model.Partner, error) {
+	// request body
+	body := postRequestBody{CompanyID: p.FreeeAccounting.CompanyId, Name: name}
+	requestBody, err := json.Marshal(body)
+	if err != nil {
+		panic(err)
+	}
+
+	// request
+	res := p.FreeeAccounting.Do("POST", "/partners", nil, bytes.NewBuffer(requestBody))
+
+	// unmarshal
+	var partnerRes partnerResponse
+	err = json.Unmarshal(res.ResBody, &partnerRes)
 	if err != nil {
 		panic(err)
 	}
@@ -80,6 +101,11 @@ func (p InfraPartnerRepository) searchFirestoreByName(name string, ctx context.C
 		panic(err)
 	}
 	return partnerIntID
+}
+
+type postRequestBody struct {
+	CompanyID string `json:"company_id"`
+	Name      string `json:"name"`
 }
 
 type partnerResponse struct {
