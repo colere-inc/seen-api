@@ -36,14 +36,18 @@ func (fa *FreeeAccounting) Do(method string, path string, values url.Values, bod
 		panic(err)
 	}
 	req.Header.Add("accept", "application/json")
+	if method == http.MethodPost {
+		req.Header.Add("Content-Type", "application/json")
+	}
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", fa.AccessToken))
 
 	// request
 	client := fa.Client
 	res, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("%v", err))
 	}
+
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {

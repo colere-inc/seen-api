@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/colere-inc/seen-api/app/common/config"
 	"google.golang.org/api/iterator"
+	"log"
+	"net/http"
 	"net/url"
 	"strconv"
 
@@ -34,7 +36,7 @@ func (p InfraPartnerRepository) GetById(id int64) (*model.Partner, error) {
 	// request
 	values := url.Values{}
 	values.Set("company_id", p.FreeeAccounting.CompanyId)
-	res := p.FreeeAccounting.Do("GET", fmt.Sprintf("/partners/%d", id), values, nil)
+	res := p.FreeeAccounting.Do(http.MethodGet, fmt.Sprintf("/partners/%d", id), values, nil)
 
 	// unmarshal
 	var partnerRes partnerResponse
@@ -46,6 +48,8 @@ func (p InfraPartnerRepository) GetById(id int64) (*model.Partner, error) {
 }
 
 func (p InfraPartnerRepository) Add(name string) (*model.Partner, error) {
+	log.Println(name)
+
 	// request body
 	body := postRequestBody{CompanyID: p.FreeeAccounting.CompanyId, Name: name}
 	requestBody, err := json.Marshal(body)
@@ -54,7 +58,12 @@ func (p InfraPartnerRepository) Add(name string) (*model.Partner, error) {
 	}
 
 	// request
-	res := p.FreeeAccounting.Do("POST", "/partners", nil, bytes.NewBuffer(requestBody))
+	res := p.FreeeAccounting.Do(http.MethodPost, "/partners", nil, bytes.NewBuffer(requestBody))
+	if res.StatusCode != http.StatusCreated {
+		log.Println("failed")
+		panic(fmt.Sprintf("unexpected status: got %v, error: %s", res.StatusCode, string(res.ResBody)))
+	}
+	log.Println("success")
 
 	// unmarshal
 	var partnerRes partnerResponse
