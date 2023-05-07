@@ -2,6 +2,7 @@ package model
 
 import (
 	"bytes"
+	"cloud.google.com/go/firestore"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -48,7 +49,7 @@ func (p InfraPartnerRepository) GetById(id int64) (*model.Partner, error) {
 }
 
 func (p InfraPartnerRepository) Add(name string) (*model.Partner, error) {
-	log.Println(name)
+	ctx := context.Background()
 
 	// request body
 	body := postRequestBody{CompanyID: p.FreeeAccounting.CompanyId, Name: name}
@@ -71,20 +72,36 @@ func (p InfraPartnerRepository) Add(name string) (*model.Partner, error) {
 	if err != nil {
 		panic(err)
 	}
+
+	// add to Firestore
+	partner := partnerRes.Partner
+	p.addToFirestore(ctx, partner.ID, partner.Name)
+
 	return &partnerRes.Partner, err
+}
+
+func (p InfraPartnerRepository) addToFirestore(
+	ctx context.Context,
+	partnerID int64,
+	name string,
+) *firestore.WriteResult {
+	partnerStringID := strconv.FormatInt(partnerID, 10)
+	data := partnerDocData{Name: name}
+	result, err := p.getCollection().Doc(partnerStringID).Set(ctx, data)
+	if err != nil {
+		panic(err)
+	}
+	return result
 }
 
 func (p InfraPartnerRepository) GetByName(name string) (*model.Partner, error) {
 	ctx := context.Background()
-	partnerID := p.searchFirestoreByName(name, ctx)
+	partnerID := p.searchFirestoreByName(ctx, name)
 	return p.GetById(partnerID)
 }
 
-func (p InfraPartnerRepository) searchFirestoreByName(name string, ctx context.Context) int64 {
-	query := p.DB.Collection(config.FreeeCompaniesCollectionId).
-		Doc(config.FreeeCompanyId).
-		Collection(config.FreeePartnersSubCollectionId).
-		Where("name", "==", name)
+func (p InfraPartnerRepository) searchFirestoreByName(ctx context.Context, name string) int64 {
+	query := p.getCollection().Where("name", "==", name)
 	var partnerID string
 	it := query.Documents(ctx)
 	for {
@@ -112,9 +129,18 @@ func (p InfraPartnerRepository) searchFirestoreByName(name string, ctx context.C
 	return partnerIntID
 }
 
+func (p InfraPartnerRepository) getCollection() *firestore.CollectionRef {
+	return p.DB.Collection(config.FreeePartnersCollectionId)
+}
+
 type postRequestBody struct {
 	CompanyID string `json:"company_id"`
 	Name      string `json:"name"`
+}
+
+// Firestore における partner のデータ
+type partnerDocData struct {
+	Name string `json:"name"`
 }
 
 type partnerResponse struct {

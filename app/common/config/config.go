@@ -8,10 +8,7 @@ import (
 )
 
 // public constants
-const (
-	FreeeCompaniesCollectionId   = "freeeCompanies"
-	FreeePartnersSubCollectionId = "partners"
-)
+const FreeePartnersCollectionId = "partners"
 
 // private constants
 const freeeApiTokenPath = "/secrets/freee-api-token"
