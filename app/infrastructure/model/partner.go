@@ -39,6 +39,12 @@ func (p InfraPartnerRepository) GetById(id int64) (*model.Partner, error) {
 	values.Set("company_id", p.FreeeAccounting.CompanyId)
 	res := p.FreeeAccounting.Do(http.MethodGet, fmt.Sprintf("/partners/%d", id), values, nil)
 
+	if res.StatusCode != http.StatusOK {
+		log.Println("failed")
+		panic(fmt.Sprintf("unexpected status: got %v, error: %s", res.StatusCode, string(res.ResBody)))
+	}
+	log.Println("success")
+
 	// unmarshal
 	var partnerRes partnerResponse
 	err := json.Unmarshal(res.ResBody, &partnerRes)
