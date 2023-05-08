@@ -125,7 +125,7 @@ func (p InfraPartnerRepository) searchFirestoreByName(ctx context.Context, name 
 	}
 
 	if partnerID == "" {
-		panic(fmt.Sprintf("not found (name = %s)", name))
+		panic(fmt.Sprintf("not found (name = %s, Collection = %s)", name, p.getCollection().Path))
 	}
 
 	partnerIntID, err := strconv.ParseInt(partnerID, 10, 64)
