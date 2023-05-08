@@ -8,5 +8,5 @@ func NewRouter(e *echo.Echo, partnerController PartnerController, invoiceControl
 	e.GET("/accounting/partners", partnerController.Get())
 	e.POST("/accounting/partners", partnerController.Add())
 
-	e.POST("/invoice/invoices", invoiceController.AddInvoice())
+	e.POST("/invoices/invoices", invoiceController.AddInvoice())
 }
