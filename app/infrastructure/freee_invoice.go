@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-const freeeInvoiceApiEndpointUrl = "https://api.freee.co.jp/iv/invoices"
+const freeeInvoiceApiEndpointUrl = "https://api.freee.co.jp/iv"
 
 type FreeeInvoice struct {
 	Client      *http.Client
