@@ -25,11 +25,14 @@ func main() {
 	firebase := infrastructure.NewFirebase()
 	db := infrastructure.NewDB(firebase)
 	freeeAccounting := infrastructure.NewFreeeAccounting()
+	freeeInvoice := infrastructure.NewFreeeInvoice()
 
-	repository := model.NewPartnerRepository(db, freeeAccounting)
-	controller := adapter.NewPartnerController(repository)
+	partnerRepository := model.NewPartnerRepository(db, freeeAccounting)
+	invoiceRepository := model.NewInvoiceRepository(freeeInvoice)
+	partnerController := adapter.NewPartnerController(partnerRepository)
+	invoiceController := adapter.NewInvoiceController(invoiceRepository)
 
-	adapter.NewRouter(e, *controller)
+	adapter.NewRouter(e, *partnerController, *invoiceController)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":" + config.Port))

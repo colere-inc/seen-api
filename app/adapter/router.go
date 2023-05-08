@@ -4,7 +4,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewRouter(e *echo.Echo, controller PartnerController) {
-	e.GET("/accounting/partners", controller.Get())
-	e.POST("/accounting/partners", controller.Add())
+func NewRouter(e *echo.Echo, partnerController PartnerController, invoiceController InvoiceController) {
+	e.GET("/accounting/partners", partnerController.Get())
+	e.POST("/accounting/partners", partnerController.Add())
+
+	e.POST("/invoice/invoices", invoiceController.AddInvoice())
 }
