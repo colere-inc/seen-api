@@ -92,11 +92,7 @@ func (p PartnerRepository) addToFirestore(
 	name string,
 ) *firestore.WriteResult {
 	id := strconv.FormatInt(partnerID, 10)
-	doc := partnerDoc{Name: name}
-	data, err := json.Marshal(doc)
-	if err != nil {
-		panic(err)
-	}
+	data := partnerDocData{Name: name}
 	result, err := p.getCollection().Doc(id).Set(ctx, data)
 	if err != nil {
 		panic(err)
@@ -149,8 +145,8 @@ type postRequestBody struct {
 }
 
 // Firestore における partner のデータ
-type partnerDoc struct {
-	Name string `json:"name"`
+type partnerDocData struct {
+	Name string `firestore:"name"`
 }
 
 type partnerResponse struct {
