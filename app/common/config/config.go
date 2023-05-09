@@ -37,7 +37,7 @@ func Init() {
 
 	log.Println("FreeeAccessToken")
 	initFreeeAccessToken()
-	log.Println("Success")
+	log.Printf("%s***", FreeeAccessToken[:3])
 }
 
 func getenv(key string) string {
