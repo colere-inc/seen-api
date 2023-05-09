@@ -18,7 +18,7 @@ import (
 	"github.com/colere-inc/seen-api/app/infrastructure"
 )
 
-type InfraPartnerRepository struct {
+type PartnerRepository struct {
 	DB              *infrastructure.DB
 	FreeeAccounting *infrastructure.FreeeAccounting
 }
@@ -27,13 +27,13 @@ func NewPartnerRepository(
 	db *infrastructure.DB,
 	freeeAccounting *infrastructure.FreeeAccounting,
 ) repository.PartnerRepository {
-	return InfraPartnerRepository{
+	return PartnerRepository{
 		DB:              db,
 		FreeeAccounting: freeeAccounting,
 	}
 }
 
-func (p InfraPartnerRepository) GetById(id int64) (*model.Partner, error) {
+func (p PartnerRepository) GetById(id int64) (*model.Partner, error) {
 	// request
 	values := url.Values{}
 	values.Set("company_id", p.FreeeAccounting.CompanyId)
@@ -54,7 +54,7 @@ func (p InfraPartnerRepository) GetById(id int64) (*model.Partner, error) {
 	return &partnerRes.Partner, err
 }
 
-func (p InfraPartnerRepository) Add(name string) (*model.Partner, error) {
+func (p PartnerRepository) Add(name string) (*model.Partner, error) {
 	ctx := context.Background()
 
 	// request body
@@ -86,27 +86,31 @@ func (p InfraPartnerRepository) Add(name string) (*model.Partner, error) {
 	return &partnerRes.Partner, err
 }
 
-func (p InfraPartnerRepository) addToFirestore(
+func (p PartnerRepository) addToFirestore(
 	ctx context.Context,
 	partnerID int64,
 	name string,
 ) *firestore.WriteResult {
-	partnerStringID := strconv.FormatInt(partnerID, 10)
-	data := partnerDocData{Name: name}
-	result, err := p.getCollection().Doc(partnerStringID).Set(ctx, data)
+	id := strconv.FormatInt(partnerID, 10)
+	doc := partnerDoc{Name: name}
+	data, err := json.Marshal(doc)
+	if err != nil {
+		panic(err)
+	}
+	result, err := p.getCollection().Doc(id).Set(ctx, data)
 	if err != nil {
 		panic(err)
 	}
 	return result
 }
 
-func (p InfraPartnerRepository) GetByName(name string) (*model.Partner, error) {
+func (p PartnerRepository) GetByName(name string) (*model.Partner, error) {
 	ctx := context.Background()
 	partnerID := p.searchFirestoreByName(ctx, name)
 	return p.GetById(partnerID)
 }
 
-func (p InfraPartnerRepository) searchFirestoreByName(ctx context.Context, name string) int64 {
+func (p PartnerRepository) searchFirestoreByName(ctx context.Context, name string) int64 {
 	query := p.getCollection().Where("name", "==", name)
 	var partnerID string
 	it := query.Documents(ctx)
@@ -135,7 +139,7 @@ func (p InfraPartnerRepository) searchFirestoreByName(ctx context.Context, name 
 	return partnerIntID
 }
 
-func (p InfraPartnerRepository) getCollection() *firestore.CollectionRef {
+func (p PartnerRepository) getCollection() *firestore.CollectionRef {
 	return p.DB.Collection(config.FreeePartnersCollectionId)
 }
 
@@ -145,7 +149,7 @@ type postRequestBody struct {
 }
 
 // Firestore における partner のデータ
-type partnerDocData struct {
+type partnerDoc struct {
 	Name string `json:"name"`
 }
 
