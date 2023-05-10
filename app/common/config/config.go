@@ -1,17 +1,19 @@
 package config
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os"
+
+	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 )
 
-// public constants
 const FreeePartnersCollectionId = "partners"
 
-// private constants
-const freeeApiTokenPath = "/secrets/freee-api-token"
+const freeeApiTokenSecretName = "freee-api-token"
 
 var Port string
 var ProjectID string
@@ -56,22 +58,49 @@ func initFreeeAccessToken() {
 		return
 	}
 
-	// ファイルが mount されている場合
-	secretBytes, err := os.ReadFile(freeeApiTokenPath)
-	if err != nil {
-		panic(fmt.Sprintf("failed to read secret: %s", err))
-	}
+	// Cloud Secret Manager から取得する場合
+	secretBytes := getSecret()
 	var token freeeApiToken
-	err = json.Unmarshal(secretBytes, &token)
+	err := json.Unmarshal(secretBytes, &token)
 	if err != nil {
 		panic(err)
 	}
 	FreeeAccessToken = token.AccessToken
-	msg := fmt.Sprintf("to load FreeeAccessToken from mounted secret file %s", freeeApiTokenPath)
+	msg := fmt.Sprintf("to load FreeeAccessToken from Cloud Secret Manager (secret name: %s)", freeeApiTokenSecretName)
 	if FreeeAccessToken == "" {
 		panic(fmt.Sprintf("failed %s: %s", msg, err))
 	}
 	log.Printf("success %s", msg)
+}
+
+func getSecret() []byte {
+	// Create the client.
+	ctx := context.Background()
+	client, err := secretmanager.NewClient(ctx)
+
+	if err != nil {
+		panic(fmt.Sprintf("failed to create secretmanager client: %v", err))
+	}
+	defer func(client *secretmanager.Client) {
+		err := client.Close()
+		if err != nil {
+
+		}
+	}(client)
+
+	// Build the request.
+	secretName := fmt.Sprintf("projects/%s/secrets/%s/versions/latest", ProjectID, freeeApiTokenSecretName)
+	accessRequest := &secretmanagerpb.AccessSecretVersionRequest{
+		Name: secretName,
+	}
+
+	// Call the API.
+	result, err := client.AccessSecretVersion(ctx, accessRequest)
+	if err != nil {
+		log.Fatalf("failed to access secret version: %v", err)
+	}
+
+	return result.Payload.Data
 }
 
 type freeeApiToken struct {
