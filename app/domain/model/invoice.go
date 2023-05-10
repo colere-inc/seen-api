@@ -91,15 +91,16 @@ type template struct {
 }
 
 type InvoiceLine struct {
-	LineType       string `json:"type"`             // 明細の種類
-	Description    string `json:"description"`      // 嫡用(品名) e.g. 切手代
-	SalesDate      string `json:"sales_date"`       // 取引日
-	Unit           string `json:"unit"`             // 明細の単位数 e.g. 個
-	Quantity       string `json:"quantity"`         // 明細の数量
-	UnitPrice      string `json:"unit_price"`       // 明細の単価
-	TaxRate        int    `json:"tax_rate"`         // 税率 Enum: [0, 8, 10]
-	ReducedTaxRate bool   `json:"reduced_tax_rate"` // 軽減税率対象 (default false, true は tax_rate = 8 のときのみ指定可能)
-	Withholding    bool   `json:"withholding"`      // 源泉徴収対象
+	ID          int64  `json:"id"`          // 明細行ID
+	LineType    string `json:"type"`        // 明細の種類
+	Description string `json:"description"` // 嫡用(品名) e.g. 切手代
+	// SalesDate      string `json:"sales_date"`       // 取引日 (optional)
+	// Unit           string `json:"unit"`             // 明細の単位数 e.g. 個 (optional)
+	Quantity  int64  `json:"quantity"`   // 明細の数量 (optional)
+	UnitPrice string `json:"unit_price"` // 明細の単価 (optional)
+	TaxRate   int    `json:"tax_rate"`   // 税率 Enum: [0, 8, 10] (optional)
+	// ReducedTaxRate bool   `json:"reduced_tax_rate"` // 軽減税率対象 (default false, true は tax_rate = 8 のときのみ指定可能)
+	Withholding bool `json:"withholding"` // 源泉徴収対象
 }
 
 const (

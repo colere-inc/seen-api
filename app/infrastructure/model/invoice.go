@@ -36,6 +36,17 @@ func (ir InvoiceRepository) Add(spaceID string, paymentDate string) (*model.Invo
 		panic(err)
 	}
 
+	quantity := int64(10)
+	unitPrice := "4378" // 3980 * 1.1
+	lines := []model.InvoiceLine{{
+		ID:          1,
+		LineType:    model.LineTypeItem,
+		Description: "Seen サーベイ 2023年5月分 6名",
+		Quantity:    quantity,
+		UnitPrice:   unitPrice,
+		TaxRate:     model.TaxRate0,
+		Withholding: true,
+	}}
 	body := invoicePostRequestBody{
 		CompanyID:                 ir.FreeeInvoice.CompanyId,
 		BillingDate:               getFormattedToday(),
@@ -45,7 +56,7 @@ func (ir InvoiceRepository) Add(spaceID string, paymentDate string) (*model.Invo
 		WithholdingTaxEntryMethod: model.TaxEntryMethodIn, // default を内税にしているが良いのか
 		PartnerID:                 partnerIntID,
 		PartnerTitle:              model.PartnerTitleGroup, // TODO
-		Lines:                     []model.InvoiceLine{},
+		Lines:                     lines,
 	}
 	requestBody, err := json.Marshal(body)
 	if err != nil {
