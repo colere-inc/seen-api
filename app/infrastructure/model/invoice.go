@@ -40,7 +40,7 @@ func (ir InvoiceRepository) Add(spaceID string, paymentDate string) (*model.Invo
 		CompanyID:                 ir.FreeeInvoice.CompanyId,
 		BillingDate:               getFormattedToday(),
 		PaymentDate:               paymentDate,
-		TaskEntryMethod:           model.TaxEntryMethodIn, // default を内税にしているが良いのか
+		TaxEntryMethod:            model.TaxEntryMethodIn, // default を内税にしているが良いのか
 		TaxFraction:               model.TaxFractionOmit,  // default が良いのか
 		WithholdingTaxEntryMethod: model.TaxEntryMethodIn, // default を内税にしているが良いのか
 		PartnerID:                 partnerIntID,
@@ -87,7 +87,7 @@ type invoicePostRequestBody struct {
 	CompanyID                 string              `json:"company_id"`
 	BillingDate               string              `json:"billing_date"`
 	PaymentDate               string              `json:"payment_date"`
-	TaskEntryMethod           string              `json:"task_entry_method"`
+	TaxEntryMethod            string              `json:"tax_entry_method"`
 	TaxFraction               string              `json:"tax_fraction"`
 	WithholdingTaxEntryMethod string              `json:"withholding_tax_entry_method"`
 	PartnerID                 int64               `json:"partner_id"`
