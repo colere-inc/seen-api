@@ -21,7 +21,7 @@ func NewFreeeAccounting() *FreeeAccounting {
 	return &FreeeAccounting{
 		Client:      &http.Client{},
 		CompanyId:   config.FreeeCompanyId,
-		AccessToken: config.FreeeAccessToken,
+		AccessToken: config.GetFreeeAccessToken(),
 	}
 }
 

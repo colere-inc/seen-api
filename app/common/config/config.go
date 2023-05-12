@@ -18,7 +18,6 @@ const freeeApiTokenSecretName = "freee-api-token"
 var Port string
 var ProjectID string
 var FreeeCompanyId string
-var FreeeAccessToken string
 
 func Init() {
 	log.Println("Port")
@@ -36,10 +35,6 @@ func Init() {
 	log.Println("FreeeCompanyId")
 	FreeeCompanyId = getenv("FREEE_COMPANY_ID")
 	log.Println(FreeeCompanyId)
-
-	log.Println("FreeeAccessToken")
-	initFreeeAccessToken()
-	log.Printf("%s***", FreeeAccessToken[:3])
 }
 
 func getenv(key string) string {
@@ -50,12 +45,12 @@ func getenv(key string) string {
 	return value
 }
 
-func initFreeeAccessToken() {
+func GetFreeeAccessToken() string {
 	// 環境変数に設定されている場合
-	FreeeAccessToken = os.Getenv("FREEE_ACCESS_TOKEN")
-	if FreeeAccessToken != "" {
+	freeeAccessToken := os.Getenv("FREEE_ACCESS_TOKEN")
+	if freeeAccessToken != "" {
 		log.Println("loaded FreeeAccessToken from Environmental Variable (FREEE_ACCESS_TOKEN)")
-		return
+		return freeeAccessToken
 	}
 
 	// Cloud Secret Manager から取得する場合
@@ -65,12 +60,14 @@ func initFreeeAccessToken() {
 	if err != nil {
 		panic(err)
 	}
-	FreeeAccessToken = token.AccessToken
+	freeeAccessToken = token.AccessToken
 	msg := fmt.Sprintf("to load FreeeAccessToken from Cloud Secret Manager (secret name: %s)", freeeApiTokenSecretName)
-	if FreeeAccessToken == "" {
+	if freeeAccessToken == "" {
 		panic(fmt.Sprintf("failed %s: %s", msg, err))
 	}
 	log.Printf("success %s", msg)
+	log.Printf("%s***", freeeAccessToken[:3])
+	return freeeAccessToken
 }
 
 func getSecret() []byte {

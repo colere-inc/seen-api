@@ -20,7 +20,7 @@ func NewFreeeInvoice() *FreeeInvoice {
 	return &FreeeInvoice{
 		Client:      &http.Client{},
 		CompanyId:   config.FreeeCompanyId,
-		AccessToken: config.FreeeAccessToken,
+		AccessToken: config.GetFreeeAccessToken(),
 	}
 }
 
