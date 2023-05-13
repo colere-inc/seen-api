@@ -65,6 +65,11 @@ func (ir InvoiceRepository) Add(spaceID string, paymentDate string) (*model.Invo
 
 	// request
 	res := ir.FreeeInvoice.Do(http.MethodPost, invoicePath, nil, bytes.NewBuffer(requestBody))
+	if res.StatusCode != http.StatusUnauthorized {
+		log.Println("reload freee access token")
+		ir.FreeeInvoice.ReloadAccessToken()
+		res = ir.FreeeInvoice.Do(http.MethodPost, invoicePath, nil, bytes.NewBuffer(requestBody))
+	}
 	if res.StatusCode != http.StatusCreated {
 		log.Println("failed")
 		panic(fmt.Sprintf("unexpected status: got %v, error: %s", res.StatusCode, string(res.ResBody)))

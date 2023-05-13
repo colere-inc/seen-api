@@ -24,7 +24,7 @@ func NewFreeeInvoice() *FreeeInvoice {
 	}
 }
 
-func (fa *FreeeInvoice) Do(method string, path string, values url.Values, body io.Reader) Response {
+func (fi *FreeeInvoice) Do(method string, path string, values url.Values, body io.Reader) Response {
 	// prepare request
 	requestUrl := freeeInvoiceApiEndpointUrl + path
 	if values != nil {
@@ -38,10 +38,10 @@ func (fa *FreeeInvoice) Do(method string, path string, values url.Values, body i
 	if method == http.MethodPost {
 		req.Header.Add("Content-Type", "application/json")
 	}
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", fa.AccessToken))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", fi.AccessToken))
 
 	// request
-	client := fa.Client
+	client := fi.Client
 	res, err := client.Do(req)
 	if err != nil {
 		panic(fmt.Sprintf("failed to send request: %v", err))
@@ -60,4 +60,8 @@ func (fa *FreeeInvoice) Do(method string, path string, values url.Values, body i
 		panic(err)
 	}
 	return Response{StatusCode: res.StatusCode, ResBody: resBody}
+}
+
+func (fi *FreeeInvoice) ReloadAccessToken() {
+	fi.AccessToken = config.GetFreeeAccessToken()
 }
