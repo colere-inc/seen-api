@@ -33,7 +33,7 @@ func (fa *FreeeAccounting) Do(method string, path string, values url.Values, bod
 	}
 	req, err := http.NewRequest(method, requestUrl, body)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("failed to create new request: %v", err))
 	}
 	req.Header.Add("accept", "application/json")
 	if method == http.MethodPost {
@@ -45,7 +45,7 @@ func (fa *FreeeAccounting) Do(method string, path string, values url.Values, bod
 	client := fa.Client
 	res, err := client.Do(req)
 	if err != nil {
-		panic(fmt.Sprintf("%v", err))
+		panic(fmt.Sprintf("failed to send request: %v", err))
 	}
 
 	defer func(Body io.ReadCloser) {
