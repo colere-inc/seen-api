@@ -5,7 +5,7 @@ import "encoding/json"
 // Invoice https://developer.freee.co.jp/reference/iv/reference#operations-tag-Invoices
 type Invoice struct {
 	ID                           int64         `json:"id"`                              // 請求書ID
-	CompanyID                    string        `json:"company_id"`                      // 事業所ID
+	CompanyID                    int64         `json:"company_id"`                      // 事業所ID
 	InvoiceNumber                string        `json:"invoice_number"`                  // 請求書番号
 	BranchNo                     int           `json:"branch_no"`                       // 枝番
 	Subject                      string        `json:"subject"`                         // 件名
