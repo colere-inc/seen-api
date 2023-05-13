@@ -36,7 +36,7 @@ func (ir InvoiceRepository) Add(spaceID string, paymentDate string) (*model.Invo
 		panic(err)
 	}
 
-	quantity := int64(10)
+	quantity := 10.0
 	unitPrice := "4378" // 3980 * 1.1
 	lines := []model.InvoiceLine{{
 		ID:          1,
@@ -70,6 +70,9 @@ func (ir InvoiceRepository) Add(spaceID string, paymentDate string) (*model.Invo
 		panic(fmt.Sprintf("unexpected status: got %v, error: %s", res.StatusCode, string(res.ResBody)))
 	}
 	log.Println("success")
+
+	// TODO: debug
+	log.Println(string(res.ResBody))
 
 	// unmarshal
 	var invoiceRes invoiceResponse
