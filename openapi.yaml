@@ -21,20 +21,25 @@ paths:
               schema:
                 type: object
                 properties:
-                  openapi:
-                    type: string
-                    example: 3.0.3
-                  info:
-                    type: object
-                    properties:
-                      title:
-                        type: string
-                        example: Title
-                      description:
-                        type: string
-                        example: Title
-                      version:
-                        type: string
+                  answers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        questionId:
+                          type: integer
+                          example: 1
+                        question:
+                          type: string
+                          example: "Q1. サーベイ結果をどのように分析すると良いかな？"
+                        answer:
+                          type: string
+                          example: "A1.<br><br>分析のための手順は以下の通りです：<br><br>1. **データクリーニング**<br>..."
+                        nextQuestionIds:
+                          type: array
+                          items:
+                            type: integer
+                            example: [2, 3, 4]
         '400':
           description: Bad Request
           content:
