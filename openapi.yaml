@@ -13,6 +13,19 @@ paths:
     get:
       summary: Chat Botの回答一覧の取得
       description: Chat Botの回答一覧の取得
+      parameters:
+        - in: query
+          name: spaceId
+          schema:
+            type: string
+          required: true
+          description: Space ID
+        - in: query
+          name: surveyId
+          schema:
+            type: string
+          required: true
+          description: Survey ID
       responses:
         '200':
           description: OK
