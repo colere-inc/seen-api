@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: seen-api
+  description: Seen API
+  version: 1.0.0
+servers:
+  - url: 'https://seen-api-akmjhvanuq-an.a.run.app'
+    description: 開発環境
+  - url: 'https://seen-api-xxxxxxxxxx-an.a.run.app'  # TODO
+    description: 本番環境
+paths:
+  '/api/v1/chatbot':
+    get:
+      summary: Chat Botの回答一覧の取得
+      description: Chat Botの回答一覧の取得
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        questionId:
+                          type: integer
+                          example: 1
+                        question:
+                          type: string
+                          example: "Q1. サーベイ結果をどのように分析すると良いかな？"
+                        answer:
+                          type: string
+                          example: "A1.<br><br>分析のための手順は以下の通りです：<br><br>1. **データクリーニング**<br>..."
+                        nextQuestionIds:
+                          type: array
+                          items:
+                            type: integer
+                            example: [2, 3, 4]
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        messages:
+                          type: array
+                          items:
+                            type: string
+                            example: "不正なリクエストです。"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type: integer
+                    example: 401
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        messages:
+                          type: array
+                          items:
+                            type: string
+                            example: "認証されていません。"
+        '402':
+          description: Payment Required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type: integer
+                    example: 402
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        messages:
+                          type: array
+                          items:
+                            type: string
+                            example: "決済が必要です。"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type: integer
+                    example: 403
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        messages:
+                          type: array
+                          items:
+                            type: string
+                            example: "権限がありません。"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type: integer
+                    example: 404
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        messages:
+                          type: array
+                          items:
+                            type: string
+                            example: "見つかりません。"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type: integer
+                    example: 500
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        messages:
+                          type: array
+                          items:
+                            type: string
+                            example: "Internal Server Errorです。"
