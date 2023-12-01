@@ -9,7 +9,7 @@ servers:
   - url: 'https://seen-api-xxxxxxxxxx-an.a.run.app'  # TODO
     description: 本番環境
 paths:
-  '/api/v1/openapi/':
+  '/api/v1/chatbot':
     get:
       summary: Chat Botの回答一覧の取得
       description: Chat Botの回答一覧の取得
