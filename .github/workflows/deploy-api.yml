@@ -1,0 +1,95 @@
+name: Depolying Cloud Run
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'
+      - '!v*.*.*'
+
+    paths:
+      - '**'
+      - '!.gitignore'
+      - '!.github/**' # GitHub 設定ファイルなので除外
+      - '.github/workflows/deploy-api.yml' # この YAML を更新後に実行
+      - '!**.md'
+
+  release:
+    types:
+      - published
+    tags: [ v*.*.* ]
+
+env:
+  GO_VERSION: 1.19
+  GCP_PROJECT_ID_PROD: colere-survey
+  GCP_PROJECT_ID_STG: colere-survey-stg
+  GCP_SERVICE_NAME: seen-api
+  GCP_REGION: asia-northeast1
+  GCP_CREDENTIALS_JSON_PROD: ${{ secrets.GCP_CREDENTIALS_JSON_PROD }}
+  GCP_CREDENTIALS_JSON_STG: ${{ secrets.GCP_CREDENTIALS_JSON_STG }}
+
+jobs:
+  deploy:
+    # 意図しない課金の防止
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set GCP_PROJECT_ID
+        run: |-
+          if [ "$GITHUB_REF" = "refs/heads/develop" ]; then
+            echo "GCP_PROJECT_ID=${GCP_PROJECT_ID_STG}" >> $GITHUB_ENV
+          elif [[ "$GITHUB_REF" =~ refs/tags/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "GCP_PROJECT_ID=${GCP_PROJECT_ID_PROD}" >> $GITHUB_ENV
+          else
+            echo GCP_PROJECT_ID='' >> $GITHUB_ENV
+          fi
+
+      # https://github.com/marketplace/actions/setup-go-environment#usage
+      - name: Go test
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: go version
+
+      - name: Authenticate to Google Cloud (prod)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ env.GCP_CREDENTIALS_JSON_PROD }}
+
+      - name: Authenticate to Google Cloud (stg)
+        if: github.ref == 'refs/heads/develop'
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ env.GCP_CREDENTIALS_JSON_STG }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
+
+      - name: Build and Push Container
+        if: env.GCP_PROJECT_ID != ''
+        run: |-
+          docker build -t gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_SERVICE_NAME }}:$GITHUB_REF_NAME .
+          docker push gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_SERVICE_NAME }}:$GITHUB_REF_NAME
+
+      # https://cloud.google.com/sdk/gcloud/reference/run/deploy
+      - name: Deploy to Cloud Run (prod)
+        if: env.GCP_PROJECT_ID == env.GCP_PROJECT_ID_PROD
+        env:
+          GOOGLE_PROJECT: ${{ env.GCP_PROJECT_ID }}
+          GOOGLE_CREDENTIALS: ${{ env.GCP_CREDENTIALS_JSON_PROD }}
+        run: |-
+          sh terraform/apply.sh prod
+
+      - name: Deploy to Cloud Run (stg)
+        if: env.GCP_PROJECT_ID == env.GCP_PROJECT_ID_STG
+        env:
+          GOOGLE_PROJECT: ${{ env.GCP_PROJECT_ID }}
+          GOOGLE_CREDENTIALS: ${{ env.GCP_CREDENTIALS_JSON_STG }}
+        run: |-
+          sh terraform/apply.sh
