@@ -9,21 +9,21 @@ servers:
   - url: 'https://seen-api-xxxxxxxxxx-an.a.run.app'  # TODO
     description: 本番環境
 paths:
-  '/api/v1/chatbot':
+  '/api/v1/spaces/{spaceId}/surveys/{surveyId}/chatbot':
     get:
       summary: Chat Botの回答一覧の取得
       description: Chat Botの回答一覧の取得
       parameters:
-        - in: query
+        - in: path
           name: spaceId
           schema:
             type: string
           required: true
           description: Space ID
-        - in: query
+        - in: path
           name: surveyId
           schema:
-            type: string
+              type: string
           required: true
           description: Survey ID
       responses:
