@@ -20,9 +20,17 @@ func (ctrl *ChatbotController) Get() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		spaceID := c.Param("spaceID")
 		surveyID := c.Param("surveyID")
+
+		// TODO: Unauthorized
+		// TODO: Payment Required
+		// TODO: Forbidden
+
 		answers, err := ctrl.chatbotRepository.GetChatbotAnswers(spaceID, surveyID)
 		if err != nil {
 			panic(any(err))
+		}
+		if len(answers.Answers) == 0 {
+			return c.JSON(http.StatusNotFound, nil)
 		}
 		return c.JSON(http.StatusOK, answers)
 	}
