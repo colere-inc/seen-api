@@ -2,7 +2,10 @@ module github.com/colere-inc/seen-api
 
 go 1.20
 
-require github.com/labstack/echo/v4 v4.11.3
+require (
+	github.com/golang/mock v1.6.0
+	github.com/labstack/echo/v4 v4.11.3
+)
 
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
