@@ -3,12 +3,15 @@ package model
 import (
 	"github.com/colere-inc/seen-api/app/domain/model"
 	"github.com/colere-inc/seen-api/app/domain/repository"
+	"github.com/colere-inc/seen-api/app/infrastructure"
 )
 
-type ChatbotRepository struct{}
+type ChatbotRepository struct {
+	db *infrastructure.DB
+}
 
-func NewChatbotRepository() repository.ChatbotRepository {
-	return ChatbotRepository{}
+func NewChatbotRepository(db *infrastructure.DB) repository.ChatbotRepository {
+	return ChatbotRepository{db: db}
 }
 
 func (c ChatbotRepository) GetChatbotAnswers(spaceID string, surveyID string) (*model.ChatbotAnswers, error) {

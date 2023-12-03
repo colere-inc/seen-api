@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/colere-inc/seen-api/app/adapter"
 	"github.com/colere-inc/seen-api/app/common/config"
+	"github.com/colere-inc/seen-api/app/infrastructure"
 	"github.com/colere-inc/seen-api/app/infrastructure/model"
 
 	"github.com/labstack/echo/v4"
@@ -21,7 +22,9 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// DI
-	chatbotRepository := model.NewChatbotRepository()
+	db := infrastructure.NewDB()
+
+	chatbotRepository := model.NewChatbotRepository(db)
 
 	chatbotController := adapter.NewChatbotController(chatbotRepository)
 
